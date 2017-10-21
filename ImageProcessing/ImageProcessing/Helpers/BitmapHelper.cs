@@ -30,10 +30,10 @@ namespace ImageProcessing.Helpers
                 return bitmapImage;
             }
         }
-        public static Bitmap AdjustContrast(this Bitmap sourceBitmap, int threshold)
+        public static void AdjustContrast(this Bitmap image, int threshold)
         {
-            BitmapData sourceData = sourceBitmap.LockBits(new Rectangle(0, 0,
-                                        sourceBitmap.Width, sourceBitmap.Height),
+            BitmapData sourceData = image.LockBits(new Rectangle(0, 0,
+                                        image.Width, image.Height),
                                         ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
 
 
@@ -43,7 +43,7 @@ namespace ImageProcessing.Helpers
             Marshal.Copy(sourceData.Scan0, pixelBuffer, 0, pixelBuffer.Length);
 
 
-            sourceBitmap.UnlockBits(sourceData);
+            image.UnlockBits(sourceData);
 
 
             double contrastLevel = Math.Pow((100.0 + threshold) / 100.0, 2);
@@ -92,21 +92,17 @@ namespace ImageProcessing.Helpers
             }
 
 
-            Bitmap resultBitmap = new Bitmap(sourceBitmap.Width, sourceBitmap.Height);
 
 
-            BitmapData resultData = resultBitmap.LockBits(new Rectangle(0, 0,
-                                        resultBitmap.Width, resultBitmap.Height),
+            BitmapData resultData = image.LockBits(new Rectangle(0, 0,
+                                        image.Width, image.Height),
                                         ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
 
 
             Marshal.Copy(pixelBuffer, 0, resultData.Scan0, pixelBuffer.Length);
-            resultBitmap.UnlockBits(resultData);
-
-
-            return resultBitmap;
+            image.UnlockBits(resultData);
         }
-        public static Bitmap AdjustBrightness(this Bitmap image, float brightness)
+        public static void AdjustBrightness(this Bitmap image, float brightness)
         {
             // Make the ColorMatrix.
             float b = brightness;
@@ -132,21 +128,17 @@ namespace ImageProcessing.Helpers
             Rectangle rect = new Rectangle(0, 0, image.Width, image.Height);
 
             // Make the result bitmap.
-            Bitmap bm = new Bitmap(image.Width, image.Height);
-            using (Graphics gr = Graphics.FromImage(bm))
+            using (Graphics gr = Graphics.FromImage(image))
             {
                 gr.DrawImage(image, points, rect,
                     GraphicsUnit.Pixel, attributes);
             }
 
-            // Return the result.
-            return bm;
         }
-        public static Bitmap ApplyNegative(this Bitmap image)
+        public static void ApplyNegative(this Bitmap image)
         {
-            Bitmap clone = (Bitmap)image.Clone();
 
-            using (Graphics g = Graphics.FromImage(clone))
+            using (Graphics g = Graphics.FromImage(image))
             {
 
                 // negation ColorMatrix
@@ -168,14 +160,11 @@ namespace ImageProcessing.Helpers
                             0, 0, image.Width, image.Height, GraphicsUnit.Pixel, attributes);
             }
 
-            return clone;
         }
-        public static Bitmap ApplyGray(this Bitmap image)
+        public static void ApplyGray(this Bitmap image)
         {
-            Bitmap newBitmap = new Bitmap(image.Width, image.Height);
-
             //get a graphics object from the new image
-            Graphics g = Graphics.FromImage(newBitmap);
+            Graphics g = Graphics.FromImage(image);
 
             //create the grayscale ColorMatrix
             ColorMatrix colorMatrix = new ColorMatrix(
@@ -201,7 +190,6 @@ namespace ImageProcessing.Helpers
 
             //dispose the Graphics object
             g.Dispose();
-            return newBitmap;
         }
 
         public static void DrawBar(this Bitmap image, int x, int from, int to, Color color)

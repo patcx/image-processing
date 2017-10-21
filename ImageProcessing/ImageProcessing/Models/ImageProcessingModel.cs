@@ -65,14 +65,14 @@ namespace ImageProcessing.Models
                 ImageSource = (Bitmap)baseImageSource.Clone();
 
                 if (isNegative)
-                    ImageSource = ImageSource.ApplyNegative();
+                    ImageSource.ApplyNegative();
                 if (isGray)
-                    ImageSource = ImageSource.ApplyGray();
+                    ImageSource.ApplyGray();
 
                 if(Math.Abs(brightness - 1) > float.Epsilon)
-                    ImageSource = ImageSource.AdjustBrightness(brightness);
+                    ImageSource.AdjustBrightness(brightness);
                 if(contrast != 0)
-                     ImageSource = ImageSource.AdjustContrast(contrast);
+                     ImageSource.AdjustContrast(contrast);
                 UpdateHistogram();
                 UpdateProjection();
             }
