@@ -1,0 +1,62 @@
+﻿<mahApps:MetroWindow x:Class="ImageProcessing.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ImageProcessing"
+        xmlns:mahApps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:vm="clr-namespace:ImageProcessing.ViewModels"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        mc:Ignorable="d"
+        Title="ImageProcessing" Height="350" Width="525"
+        WindowState="Maximized"
+        TitleCaps="False">
+    <Window.Resources>
+        <vm:ImageProcessingViewModel x:Key="imageProcessing"></vm:ImageProcessingViewModel>
+    </Window.Resources>
+    <Window.DataContext>
+        <StaticResource ResourceKey="imageProcessing"></StaticResource>
+    </Window.DataContext>
+
+   
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="300"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        
+        <Image Margin="5" Stretch="Fill" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="0" Source="{Binding ImageSource}">
+
+        </Image>
+        <StackPanel Margin="10" Grid.Column="1">
+            <Button Content="Wczytaj" Command="{Binding ImageSelect}"></Button>
+            <TextBlock FontSize="16" Text="Histogram"></TextBlock>
+            <Border Margin="3" BorderBrush="Black" BorderThickness="2">
+                <Image Height="250" Stretch="Fill"  Source="{Binding Histogram}"></Image>
+            </Border>
+            <TextBlock FontSize="16" Text="Projekcja"></TextBlock>
+            <Border Margin="3" BorderBrush="Black" BorderThickness="2">
+                <Image Height="250" Stretch="Fill"  Source="{Binding Projection}"></Image>
+            </Border>
+             <mahApps:ToggleSwitch Margin="0 30 0 0" Header="Skala szarości" OnLabel="Włączona" OffLabel="Wyłączona" IsChecked="{Binding IsGray}" />
+            <mahApps:ToggleSwitch Header="Negacja" OnLabel="Włączona" OffLabel="Wyłączona" IsChecked="{Binding IsNegative}" />
+            <TextBlock FontSize="16" Text="Jasność"></TextBlock>
+            <Slider Minimum="0" Value="{Binding Brightness}"  Maximum="2">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="ValueChanged">
+                        <i:InvokeCommandAction Command="{Binding AdjustBrightness}"></i:InvokeCommandAction>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Slider>
+            <TextBlock FontSize="16" Text="Kontrast"></TextBlock>
+            <Slider Minimum="-100" Value="{Binding Contrast}"  Maximum="100">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="ValueChanged">
+                        <i:InvokeCommandAction Command="{Binding AdjustContrast}"></i:InvokeCommandAction>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Slider>
+        </StackPanel>
+    </Grid>
+</mahApps:MetroWindow>
