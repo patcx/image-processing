@@ -50,10 +50,11 @@ namespace ImageProcessing.ViewModels
         }
 
         public int Contrast { get; set; } = 0;
-        public float Brightness { get; set; } = 1;
+        public int Brightness { get; set; } = 0;
         public BitmapImage ImageSource { get; set; }
         public BitmapImage Histogram { get; set; }
-        public BitmapImage Projection { get; set; }
+        public BitmapImage VerticalProjection { get; set; }
+        public BitmapImage HorizontalProjection { get; set; }
 
         public ImageProcessingViewModel()
         {
@@ -91,10 +92,12 @@ namespace ImageProcessing.ViewModels
         {
             ImageSource = imageModel.ImageSource.ToBitmapImage();
             Histogram = imageModel.Histogram.ToBitmapImage();
-            Projection = imageModel.Projection.ToBitmapImage();
+            VerticalProjection = imageModel.VerticalProjection.ToBitmapImage();
+            HorizontalProjection = imageModel.HorizontalProjection.ToBitmapImage();
             RaisePropertyChanged("ImageSource");
             RaisePropertyChanged("Histogram");
-            RaisePropertyChanged("Projection");
+            RaisePropertyChanged("VerticalProjection");
+            RaisePropertyChanged("HorizontalProjection");
         }
 
         public ICommand ImageSelect => new RelayCommand(() =>

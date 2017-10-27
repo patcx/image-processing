@@ -6,13 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ImageProcessing.Helpers;
+using ImageProcessing.Models.Algorithms;
 
 namespace ImageProcessing.Models
 {
     public class ImageProcessingModel
     {
         private int contrast = 0;
-        private float brightness = 1;
+        private int brightness = 0;
         private bool isGray = false;
         private bool isNegative = false;
 
@@ -21,7 +22,8 @@ namespace ImageProcessing.Models
 
         public Bitmap ImageSource { get; set; }
         public Bitmap Histogram { get; set; }
-        public Bitmap Projection { get; set; }
+        public Bitmap VerticalProjection { get; set; }
+        public Bitmap HorizontalProjection { get; set; }
 
         public ImageProcessingModel(string path)
         {
@@ -40,7 +42,7 @@ namespace ImageProcessing.Models
             UpdateBitmap();
         }
 
-        public void SetBrightness(float brightness)
+        public void SetBrightness(int brightness)
         {
             this.brightness = brightness;
             UpdateBitmap();
@@ -65,14 +67,15 @@ namespace ImageProcessing.Models
                 ImageSource = (Bitmap)baseImageSource.Clone();
 
                 if (isNegative)
-                    ImageSource.ApplyNegative();
+                    ImageSource.ApplyTransformation(new Negative());
                 if (isGray)
-                    ImageSource.ApplyGray();
+                    ImageSource.ApplyTransformation(new Grayscale());
 
-                if(Math.Abs(brightness - 1) > float.Epsilon)
-                    ImageSource.AdjustBrightness(brightness);
+                if (brightness != 0)
+                    ImageSource.ApplyTransformation(new Brightness(brightness));
                 if(contrast != 0)
-                     ImageSource.AdjustContrast(contrast);
+                    ImageSource.ApplyTransformation(new Contrast(contrast));
+
                 UpdateHistogram();
                 UpdateProjection();
             }
@@ -96,24 +99,18 @@ namespace ImageProcessing.Models
 
             int maxR = (from x in colorR
                         orderby x descending
-                        select x).Skip(0).First();
+                        select x).Skip(1).First();
             int maxG = (from x in colorG
                         orderby x descending
-                        select x).Skip(0).First();
+                        select x).Skip(1).First();
             int maxB = (from x in colorB
                         orderby x descending
-                        select x).Skip(0).First();
+                        select x).Skip(1).First();
 
             int max = Math.Max(Math.Max(colorR.Max(), colorB.Max()), colorG.Max());
 
             Bitmap bm = new Bitmap(255, 300);
-            using (var g = Graphics.FromImage(bm))
-            {
-                using (var b = new SolidBrush(Color.Black))
-                {
-                    g.FillRectangle(b, 0, 0, bm.Width, bm.Height);
-                }
-            }
+            bm.Fill(Color.Black);
           
 
             for (int i = 0; i < 256; i++)
@@ -148,24 +145,37 @@ namespace ImageProcessing.Models
 
         private void UpdateProjection()
         {
-            int[] projection = new int[ImageSource.Width];
+            int[] hprojection = new int[ImageSource.Height];
+            int[] vprojection = new int[ImageSource.Width];
             for (int i = 0; i < ImageSource.Width; i++)
             {
                 for (int j = 0; j < ImageSource.Height; j++)
                 {
                     var pixel = ImageSource.GetPixel(i, j);
-                    if (pixel.GetBrightness() > 0.5)
-                        projection[i]++;
+                    if (pixel.GetBrightness() < 0.5)
+                    {
+                        vprojection[i]++;
+                        hprojection[j]++;
+                    }
                 }
             }
 
-            var bm = new Bitmap(ImageSource.Width, projection.Max()+1);
-            for (int i = 0; i < projection.Length; i++)
+            var bmv = new Bitmap(ImageSource.Width, vprojection.Max()+1);
+            for (int i = 0; i < vprojection.Length; i++)
             {
-                bm.DrawBar(i, 0, projection[i], Color.Black);
+                bmv.DrawBar(i, 0, vprojection[i], Color.Black);
+            }
+          
+
+            var bmh = new Bitmap(hprojection.Max() + 1, ImageSource.Height);
+            for (int i = 0; i < hprojection.Length; i++)
+            {
+                bmh.DrawBarH(i, 0, hprojection[i], Color.Black);
             }
 
-            Projection = bm;
+
+            VerticalProjection = bmv;
+            HorizontalProjection = bmh;
         }
     }
 }

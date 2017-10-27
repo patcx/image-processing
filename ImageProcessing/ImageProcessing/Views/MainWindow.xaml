@@ -18,45 +18,65 @@
         <StaticResource ResourceKey="imageProcessing"></StaticResource>
     </Window.DataContext>
 
-   
+
 
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"></ColumnDefinition>
             <ColumnDefinition Width="300"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        
-        <Image Margin="5" Stretch="Fill" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="0" Source="{Binding ImageSource}">
 
-        </Image>
-        <StackPanel Margin="10" Grid.Column="1">
-            <Button Content="Wczytaj" Command="{Binding ImageSelect}"></Button>
-            <TextBlock FontSize="16" Text="Histogram"></TextBlock>
-            <Border Margin="3" BorderBrush="Black" BorderThickness="2">
+        <Grid Margin="5" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Image Stretch="Fill" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="0" Source="{Binding ImageSource}">
+            </Image>
+            <Image MaxHeight="100" Grid.Row="1" Stretch="Fill" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="0" Source="{Binding VerticalProjection}">
+            </Image>
+            <Image MaxWidth="100" Grid.Column="1" Stretch="Fill" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Source="{Binding HorizontalProjection}">
+            </Image>
+        </Grid>
+       
+
+        <ScrollViewer Grid.Column="1">
+            <StackPanel Margin="10" Grid.Column="1">
+
                 <Image Height="250" Stretch="Fill"  Source="{Binding Histogram}"></Image>
-            </Border>
-            <TextBlock FontSize="16" Text="Projekcja"></TextBlock>
-            <Border Margin="3" BorderBrush="Black" BorderThickness="2">
-                <Image Height="250" Stretch="Fill"  Source="{Binding Projection}"></Image>
-            </Border>
-             <mahApps:ToggleSwitch Margin="0 30 0 0" Header="Skala szarości" OnLabel="Włączona" OffLabel="Wyłączona" IsChecked="{Binding IsGray}" />
-            <mahApps:ToggleSwitch Header="Negacja" OnLabel="Włączona" OffLabel="Wyłączona" IsChecked="{Binding IsNegative}" />
-            <TextBlock FontSize="16" Text="Jasność"></TextBlock>
-            <Slider Minimum="0" Value="{Binding Brightness}"  Maximum="2">
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="ValueChanged">
-                        <i:InvokeCommandAction Command="{Binding AdjustBrightness}"></i:InvokeCommandAction>
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-            </Slider>
-            <TextBlock FontSize="16" Text="Kontrast"></TextBlock>
-            <Slider Minimum="-100" Value="{Binding Contrast}"  Maximum="100">
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="ValueChanged">
-                        <i:InvokeCommandAction Command="{Binding AdjustContrast}"></i:InvokeCommandAction>
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-            </Slider>
-        </StackPanel>
+
+                <mahApps:ToggleSwitch Margin="0 30 0 0" Header="Skala szarości" OnLabel="Włączona" OffLabel="Wyłączona" IsChecked="{Binding IsGray}" />
+                <mahApps:ToggleSwitch Header="Negacja" OnLabel="Włączona" OffLabel="Wyłączona" IsChecked="{Binding IsNegative}" /> 
+                <TextBlock FontSize="16" Text="Jasność"></TextBlock>
+                <Slider Minimum="-255" Value="{Binding Brightness}"  Maximum="255">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="ValueChanged">
+                            <i:InvokeCommandAction Command="{Binding AdjustBrightness}"></i:InvokeCommandAction>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Slider>
+                <TextBlock FontSize="16" Text="Kontrast"></TextBlock>
+                <Slider Minimum="-100" Value="{Binding Contrast}"  Maximum="100">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="ValueChanged">
+                            <i:InvokeCommandAction Command="{Binding AdjustContrast}"></i:InvokeCommandAction>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Slider>
+
+                <Button Margin="5" Content="Wczytaj" Command="{Binding ImageSelect}"></Button>
+                <Button Margin="5" Content="Resetuj" Command="{Binding ImageSelect}"></Button>
+
+                <Button Margin="5" Content="Filtry"/>
+                <Button Margin="5" Content="Wykrywanie krawędzi"></Button>
+            </StackPanel>
+
+          
+
+        </ScrollViewer>
     </Grid>
 </mahApps:MetroWindow>
