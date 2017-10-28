@@ -83,20 +83,13 @@
     <Compile Include="Helpers\BitmapWrapper.cs" />
     <Compile Include="Models\Algorithms\Brightness.cs" />
     <Compile Include="Models\Algorithms\Contrast.cs" />
+    <Compile Include="Models\Algorithms\GaussianFilter.cs" />
     <Compile Include="Models\Algorithms\Grayscale.cs" />
     <Compile Include="Models\Algorithms\IImageProcessAlgorithm.cs" />
+    <Compile Include="Models\Algorithms\LowpassFilter.cs" />
     <Compile Include="Models\Algorithms\Negative.cs" />
-    <Compile Include="Views\Projection.xaml.cs">
-      <DependentUpon>Projection.xaml</DependentUpon>
-    </Compile>
-    <Page Include="Views\EdgeDetection.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Filters.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
+    <Compile Include="Models\Algorithms\RobertsEdgeDetection.cs" />
+    <Compile Include="Models\Algorithms\SobelEdgeDetection.cs" />
     <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -109,20 +102,10 @@
     <Compile Include="Helpers\ColorExtender.cs" />
     <Compile Include="Models\ImageProcessingModel.cs" />
     <Compile Include="ViewModels\ImageProcessingViewModel.cs" />
-    <Compile Include="Views\EdgeDetection.xaml.cs">
-      <DependentUpon>EdgeDetection.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Filters.xaml.cs">
-      <DependentUpon>Filters.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Views\Projection.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

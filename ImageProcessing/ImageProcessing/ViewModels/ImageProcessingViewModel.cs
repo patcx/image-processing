@@ -19,13 +19,18 @@ namespace ImageProcessing.ViewModels
 {
     public class ImageProcessingViewModel : ObservableObject
     {
+        private bool isEdgeDetection;
         private bool isNegative;
         private bool isGray;
+        private bool isGauss = true;
+        private bool isBlur = false;
+        private bool isSobel = true;
 
         private ImageProcessingModel imageModel;
 
         private Timer updateConstrastTimer = new Timer();
         private Timer updateBrightnessTimer = new Timer();
+        private Timer updateBlurFilterTimer = new Timer();
 
         public bool IsNegative
         {
@@ -49,8 +54,61 @@ namespace ImageProcessing.ViewModels
             }
         }
 
+        public bool IsEdgeDetection
+        {
+            get { return isEdgeDetection; }
+            set
+            {
+                isEdgeDetection = value;
+                imageModel.SetEdgeDetection(isEdgeDetection, isSobel);
+                RedrawImage();
+            }
+        }
+
         public int Contrast { get; set; } = 0;
         public int Brightness { get; set; } = 0;
+        public int BlurFilterValue { get; set; } = 0;
+
+        public bool IsBlur
+        {
+            get
+            {
+                return isBlur; ;
+            }
+            set
+            {
+                isBlur = value;
+
+                imageModel.SetBlurFilter(isBlur, BlurFilterValue, isGauss);
+                RedrawImage();
+            }
+        }
+
+        public bool IsGauss
+        {
+            get { return isGauss; }
+            set
+            {
+                isGauss = value;
+                    imageModel.SetBlurFilter(isBlur, BlurFilterValue, isGauss);
+                    RedrawImage();
+            }
+        }
+
+        public bool IsSobel
+        {
+            get
+            {
+                return isSobel;
+            }
+            set
+            {
+                isSobel = value;
+                imageModel.SetEdgeDetection(IsEdgeDetection, isSobel);
+                RedrawImage();
+            }
+        }
+
         public BitmapImage ImageSource { get; set; }
         public BitmapImage Histogram { get; set; }
         public BitmapImage VerticalProjection { get; set; }
@@ -59,7 +117,7 @@ namespace ImageProcessing.ViewModels
         public ImageProcessingViewModel()
         {
             string path = @"E:\Downloads\eye.jpg";
-            if(File.Exists(path))
+            if (File.Exists(path))
             {
                 imageModel = new ImageProcessingModel(path);
                 RedrawImage();
@@ -70,7 +128,7 @@ namespace ImageProcessing.ViewModels
                 AutoReset = false,
                 Interval = 500,
             };
-            updateBrightnessTimer.Elapsed += delegate(object o, ElapsedEventArgs e)
+            updateBrightnessTimer.Elapsed += delegate (object o, ElapsedEventArgs e)
             {
                 imageModel.SetBrightness(Brightness);
                 RedrawImage();
@@ -85,6 +143,20 @@ namespace ImageProcessing.ViewModels
             {
                 imageModel.SetConstrast(Contrast);
                 RedrawImage();
+            };
+
+            updateBlurFilterTimer = new Timer()
+            {
+                AutoReset = false,
+                Interval = 500,
+            };
+            updateBlurFilterTimer.Elapsed += delegate (object o, ElapsedEventArgs e)
+            {
+                if (isBlur)
+                {
+                    imageModel.SetBlurFilter(isBlur, BlurFilterValue, IsGauss);
+                    RedrawImage();
+                }
             };
         }
 
@@ -109,14 +181,7 @@ namespace ImageProcessing.ViewModels
                 try
                 {
                     imageModel = new ImageProcessingModel(dialog.FileName);
-                    Contrast = 0;
-                    Brightness = 1;
-                    isGray = false;
-                    isNegative = false;
-                    RaisePropertyChanged("Contrast");
-                    RaisePropertyChanged("Brightness");
-                    RaisePropertyChanged("IsGray");
-                    RaisePropertyChanged("IsNegative");
+                    ResetParameters();
                     RedrawImage();
 
                 }
@@ -125,6 +190,31 @@ namespace ImageProcessing.ViewModels
                     MessageBox.Show(e.ToString());
                 }
             }
+        });
+
+        private void ResetParameters()
+        {
+            Contrast = 0;
+            Brightness = 0;
+            BlurFilterValue = 0;
+            isGray = false;
+            isNegative = false;
+            isEdgeDetection = false;
+            isBlur = false;
+            RaisePropertyChanged("Contrast");
+            RaisePropertyChanged("Brightness");
+            RaisePropertyChanged("IsGray");
+            RaisePropertyChanged("IsNegative");
+            RaisePropertyChanged("BlurFilterValue");
+            RaisePropertyChanged("IsBlur");
+            RaisePropertyChanged("IsEdgeDetection");
+            RedrawImage();
+        }
+
+        public ICommand ResetSettings => new RelayCommand(() =>
+        {
+            ResetParameters();
+            RedrawImage();
         });
 
         public ICommand AdjustContrast => new RelayCommand(() =>
@@ -137,6 +227,11 @@ namespace ImageProcessing.ViewModels
         {
             updateBrightnessTimer.Stop();
             updateBrightnessTimer.Start();
+        });
+        public ICommand AdjustBlurFilter => new RelayCommand(() =>
+        {
+            updateBlurFilterTimer.Stop();
+            updateBlurFilterTimer.Start();
         });
     }
 }

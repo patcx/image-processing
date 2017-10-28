@@ -14,8 +14,13 @@ namespace ImageProcessing.Models
     {
         private int contrast = 0;
         private int brightness = 0;
+        private int blurFilterValue = 0;
+        private bool isGauss = true;
         private bool isGray = false;
         private bool isNegative = false;
+        private bool isEdgeDetection = false;
+        private bool isBlur = false;
+        private bool isSobel = true;
 
         private Bitmap baseImageSource;
         private object bitmapLock = new object();
@@ -60,6 +65,21 @@ namespace ImageProcessing.Models
             UpdateBitmap();
         }
 
+        public void SetBlurFilter(bool isEnabled, int value, bool isGauss)
+        {
+            blurFilterValue = value;
+            this.isGauss = isGauss;
+            this.isBlur = isEnabled;
+            UpdateBitmap();
+        }
+
+        public void SetEdgeDetection(bool isEnabled, bool isSobel)
+        {
+            isEdgeDetection = isEnabled;
+            this.isSobel = isSobel;
+            UpdateBitmap();
+        }
+
         private void UpdateBitmap()
         {
             lock (bitmapLock)
@@ -75,6 +95,14 @@ namespace ImageProcessing.Models
                     ImageSource.ApplyTransformation(new Brightness(brightness));
                 if(contrast != 0)
                     ImageSource.ApplyTransformation(new Contrast(contrast));
+                if (isBlur)
+                {
+                    ImageSource.ApplyTransformation(isGauss ? (IImageProcessAlgorithm)new GaussianFilter(blurFilterValue+1) : new LowpassFilter(blurFilterValue));
+                }
+                if (isEdgeDetection)
+                {
+                    ImageSource.ApplyTransformation(isSobel ? (IImageProcessAlgorithm)new SobelEdgeDetection() : new RobertsEdgeDetection());
+                }
 
                 UpdateHistogram();
                 UpdateProjection();
